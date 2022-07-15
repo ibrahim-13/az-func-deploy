@@ -18,6 +18,7 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 		CommandDotNetBuild(writer, funcInfo.ProjectDir)
 		baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
 		outputFile := CommandZipBuildOutput(writer, baseConfigDir, funcInfo.ProjectDir)
+		CommandAzureZipDeploy(writer, conf.Sets[conf.CurrentSet].ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
 		os.Remove(outputFile)
 		writeBlackYellowln(writer, formatFuncMsg(funcInfo.FuncName, "End"))
 	}

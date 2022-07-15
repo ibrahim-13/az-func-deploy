@@ -27,3 +27,7 @@ func CommandZipBuildOutput(w io.Writer, outputDir string, projectDir string) str
 	CommandStartAndWait(w, buildDir, "C:\\Windows\\System32\\cmd.exe", "/c", "powershell", "-command", "Compress-Archive -Path * -DestinationPath "+zipFile)
 	return zipFile
 }
+
+func CommandAzureZipDeploy(w io.Writer, resourceGroup string, funcName string, projectDir string, zipFile string) {
+	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "az", "webapp", "deploy", "--resource-group", resourceGroup, "--name", funcName, "--src-path", zipFile)
+}
