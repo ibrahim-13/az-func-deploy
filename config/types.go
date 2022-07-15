@@ -9,8 +9,9 @@ type DeployFuncInfo struct {
 }
 
 type DeploySet struct {
-	Name      string
-	FuncInfos []DeployFuncInfo
+	Name              string
+	ResourceGroupName string
+	FuncInfos         []DeployFuncInfo
 }
 
 var _deployMethods []DeployMethod = []DeployMethod{__deployMethodZip, __deployMethodFunc}
@@ -19,7 +20,6 @@ type DeployConfig struct {
 	ConfigJsonLocation string `json:"-"`
 	Method             DeployMethod
 	SubscriptionId     string
-	ResourceGroupName  string
 	Sets               []DeploySet
 	CurrentSet         int
 }
