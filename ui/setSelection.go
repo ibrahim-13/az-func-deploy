@@ -6,12 +6,14 @@ import (
 	"github.com/rivo/tview"
 )
 
-func NewSetSelectionLayout(config *config.DeployConfig) *tview.Form {
+func NewSetSelectionLayout(dcon *config.DeployConfig) *tview.Form {
 	form := tview.NewForm()
-	options := []string{}
-	for _, set := range config.Sets {
-		options = append(options, set.Name)
+	optionsSet := []string{}
+	for _, set := range dcon.Sets {
+		optionsSet = append(optionsSet, set.Name)
 	}
-	form.AddDropDown("Deployment Set", options, 0, func(option string, optionIndex int) {})
+	form.AddDropDown("Deployment Set", optionsSet, dcon.CurrentSet, func(option string, optionIndex int) {})
+	optionsMethods := config.GetDeploymentMethods()
+	form.AddDropDown("Deployment Set", optionsMethods, config.GetDeploymentMethodIndex(dcon.Method), func(option string, optionIndex int) {})
 	return form
 }

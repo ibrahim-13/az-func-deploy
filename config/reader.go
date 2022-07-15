@@ -8,7 +8,9 @@ import (
 )
 
 const (
-	__fileNameConfig string = "deploy.config.json"
+	__fileNameConfig   string = "deploy.config.json"
+	__deployMethodFunc string = "func"
+	__deployMethodZip  string = "zip"
 )
 
 func ReadConfigOrPanic() *DeployConfig {
@@ -32,6 +34,9 @@ func readFromFile(filePath string) *DeployConfig {
 	util.PanicIfNotNil(err)
 	err = json.Unmarshal(bytes, &config)
 	util.PanicIfNotNil(err)
+	if !(config.Method == __deployMethodFunc || config.Method == __deployMethodZip) {
+		config.Method = __deployMethodZip
+	}
 	config.ConfigJsonLocation = filePath
 	return &config
 }
