@@ -1,5 +1,11 @@
 package config
 
+const (
+	DeployMethodFunc   string = "func"
+	DeployMethodAzFunc string = "azfunc"
+	DeployMethodAzZip  string = "azzip"
+)
+
 type DeployMethod = string
 
 type DeployFuncInfo struct {
@@ -14,7 +20,7 @@ type DeploySet struct {
 	FuncInfos         []DeployFuncInfo
 }
 
-var _deployMethods []DeployMethod = []DeployMethod{__deployMethodZip, __deployMethodFunc}
+var _deployMethods []DeployMethod = []DeployMethod{DeployMethodAzFunc, DeployMethodAzZip, DeployMethodFunc}
 
 type DeployConfig struct {
 	ConfigJsonLocation string `json:"-"`

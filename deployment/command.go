@@ -28,6 +28,17 @@ func CommandZipBuildOutput(w io.Writer, outputDir string, projectDir string) str
 	return zipFile
 }
 
+// https://docs.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
 func CommandAzureZipDeploy(w io.Writer, resourceGroup string, funcName string, projectDir string, zipFile string) {
 	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "az", "webapp", "deploy", "--resource-group", resourceGroup, "--name", funcName, "--src-path", zipFile)
+}
+
+// https://docs.microsoft.com/en-us/cli/azure/functionapp/deployment/source?view=azure-cli-latest#az-functionapp-deployment-source-config-zip
+func CommandAzureFuncZipDeploy(w io.Writer, resourceGroup string, funcName string, projectDir string, zipFile string) {
+	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "az", "functionapp", "deployment", "source", "config-zip", "--resource-group", resourceGroup, "--name", funcName, "--src", zipFile)
+}
+
+// https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash#project-file-deployment
+func CommandFuncDeployProject(w io.Writer, funcName string, projectDir string) {
+	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "func", "azure", "functionapp", "publish", funcName)
 }

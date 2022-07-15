@@ -9,7 +9,7 @@ import (
 func WriteEmptyConfig(filePath string) {
 	funcInfo := []DeployFuncInfo{{}}
 	sets := []DeploySet{{FuncInfos: funcInfo}}
-	config := DeployConfig{Sets: sets, Method: __deployMethodFunc}
+	config := DeployConfig{Sets: sets, Method: DeployMethodAzFunc}
 	bytes, err := json.Marshal(config)
 	util.PanicIfNotNil(err)
 	err = os.WriteFile(filePath, bytes, 0777)

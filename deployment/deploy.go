@@ -15,11 +15,21 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 			writeRedln(writer, formatFuncMsg(funcInfo.FuncName, "Skipped"))
 			continue
 		}
-		CommandDotNetBuild(writer, funcInfo.ProjectDir)
-		baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
-		outputFile := CommandZipBuildOutput(writer, baseConfigDir, funcInfo.ProjectDir)
-		CommandAzureZipDeploy(writer, conf.Sets[conf.CurrentSet].ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
-		os.Remove(outputFile)
+		if conf.Method == config.DeployMethodFunc {
+			CommandFuncDeployProject(writer, funcInfo.FuncName, funcInfo.ProjectDir)
+		} else {
+			CommandDotNetBuild(writer, funcInfo.ProjectDir)
+			baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
+			outputFile := CommandZipBuildOutput(writer, baseConfigDir, funcInfo.ProjectDir)
+			if conf.Method == config.DeployMethodAzFunc {
+				CommandAzureFuncZipDeploy(writer, conf.Sets[conf.CurrentSet].ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+			} else if conf.Method == config.DeployMethodAzZip {
+				CommandAzureFuncZipDeploy(writer, conf.Sets[conf.CurrentSet].ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+			} else {
+				panic("Invalid deployment methdo: " + conf.Method)
+			}
+			os.Remove(outputFile)
+		}
 		writeBlackYellowln(writer, formatFuncMsg(funcInfo.FuncName, "End"))
 	}
 	writeHighlightln(writer, "Finised Deployment")
