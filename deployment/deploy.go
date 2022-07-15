@@ -3,6 +3,8 @@ package deployment
 import (
 	"az-func-deploy/config"
 	"io"
+	"os"
+	"path/filepath"
 )
 
 func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
@@ -13,7 +15,10 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 			writeRedln(writer, formatFuncMsg(funcInfo.FuncName, "Skipped"))
 			continue
 		}
-		CommandStartAndWait(writer, "cmd.exe", "/c", "dir")
+		CommandDotNetBuild(writer, funcInfo.ProjectDir)
+		baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
+		outputFile := CommandZipBuildOutput(writer, baseConfigDir, funcInfo.ProjectDir)
+		os.Remove(outputFile)
 		writeBlackYellowln(writer, formatFuncMsg(funcInfo.FuncName, "End"))
 	}
 	writeHighlightln(writer, "Finised Deployment")
