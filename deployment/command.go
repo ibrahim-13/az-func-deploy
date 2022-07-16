@@ -3,10 +3,19 @@ package deployment
 import (
 	"io"
 	"os/exec"
-	"path/filepath"
-	"strconv"
-	"time"
+	"runtime"
 )
+
+type PlatformDeployCommands interface {
+	DotNetBuild(projectDir string)
+	ZipBuildOutput(outputDir string, projectDir string) string
+	// https://docs.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
+	AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string)
+	// https://docs.microsoft.com/en-us/cli/azure/functionapp/deployment/source?view=azure-cli-latest#az-functionapp-deployment-source-config-zip
+	AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string)
+	// https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash#project-file-deployment
+	FuncDeployProject(funcName string, projectDir string)
+}
 
 func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) {
 	cmd := exec.Command(name, param...)
@@ -17,28 +26,15 @@ func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) 
 	cmd.Wait()
 }
 
-func CommandDotNetBuild(w io.Writer, projectDir string) {
-	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "dotnet", "build", "--configuration", "Release")
-}
-
-func CommandZipBuildOutput(w io.Writer, outputDir string, projectDir string) string {
-	buildDir := filepath.Join(projectDir, "bin", "Release", "net6.0")
-	zipFile := filepath.Join(outputDir, strconv.FormatInt(time.Now().Unix(), 10)+".zip")
-	CommandStartAndWait(w, buildDir, "C:\\Windows\\System32\\cmd.exe", "/c", "powershell", "-command", "Compress-Archive -Path * -DestinationPath "+zipFile)
-	return zipFile
-}
-
-// https://docs.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
-func CommandAzureZipDeploy(w io.Writer, resourceGroup string, funcName string, projectDir string, zipFile string) {
-	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "az", "webapp", "deploy", "--resource-group", resourceGroup, "--name", funcName, "--src-path", zipFile)
-}
-
-// https://docs.microsoft.com/en-us/cli/azure/functionapp/deployment/source?view=azure-cli-latest#az-functionapp-deployment-source-config-zip
-func CommandAzureFuncZipDeploy(w io.Writer, resourceGroup string, funcName string, projectDir string, zipFile string) {
-	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "az", "functionapp", "deployment", "source", "config-zip", "--resource-group", resourceGroup, "--name", funcName, "--src", zipFile)
-}
-
-// https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash#project-file-deployment
-func CommandFuncDeployProject(w io.Writer, funcName string, projectDir string) {
-	CommandStartAndWait(w, projectDir, "C:\\Windows\\System32\\cmd.exe", "/c", "func", "azure", "functionapp", "publish", funcName)
+func NewCommandSet(writer io.Writer) PlatformDeployCommands {
+	switch runtime.GOOS {
+	case "windows":
+		return &cmdCtxWindows{w: writer}
+	case "darwin":
+		return &cmdCtxWindows{w: writer}
+	case "linux":
+		return &cmdCtxLinux{w: writer}
+	default:
+		panic("Current platform not supported")
+	}
 }

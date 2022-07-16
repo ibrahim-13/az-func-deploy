@@ -11,6 +11,7 @@ import (
 func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 	logger := logger.NewLogger(writer)
 	currentSet := conf.Sets[conf.CurrentSet]
+	cmds := NewCommandSet(writer)
 	logger.Highlightln("Starting Deployment")
 	for _, funcInfo := range currentSet.FuncInfos {
 		logger.SetScope(funcInfo.FuncName)
@@ -20,15 +21,15 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 			continue
 		}
 		if conf.Method == config.DeployMethodFunc {
-			CommandFuncDeployProject(writer, funcInfo.FuncName, funcInfo.ProjectDir)
+			cmds.FuncDeployProject(funcInfo.FuncName, funcInfo.ProjectDir)
 		} else {
-			CommandDotNetBuild(writer, funcInfo.ProjectDir)
+			cmds.DotNetBuild(funcInfo.ProjectDir)
 			baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
-			outputFile := CommandZipBuildOutput(writer, baseConfigDir, funcInfo.ProjectDir)
+			outputFile := cmds.ZipBuildOutput(baseConfigDir, funcInfo.ProjectDir)
 			if conf.Method == config.DeployMethodAzFunc {
-				CommandAzureFuncZipDeploy(writer, currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+				cmds.AzureFuncZipDeploy(currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
 			} else if conf.Method == config.DeployMethodAzZip {
-				CommandAzureFuncZipDeploy(writer, currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+				cmds.AzureFuncZipDeploy(currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
 			} else {
 				panic("Invalid deployment methdo: " + conf.Method)
 			}
