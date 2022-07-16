@@ -7,8 +7,9 @@ const (
 )
 
 type Logger struct {
-	writer io.Writer
-	scope  string
+	writer   io.Writer
+	scope    string
+	useColor bool
 }
 
 func NewLogger(writer io.Writer) *Logger {
@@ -18,4 +19,8 @@ func NewLogger(writer io.Writer) *Logger {
 
 func (logger *Logger) SetScope(scope string) {
 	logger.scope = scope
+}
+
+func (logger *Logger) SetColor(val bool) {
+	logger.useColor = val
 }

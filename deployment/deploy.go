@@ -9,8 +9,9 @@ import (
 	"time"
 )
 
-func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
+func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor bool) {
 	logger := logger.NewLogger(writer)
+	logger.SetColor(!disableColor)
 	currentSet := conf.Sets[conf.CurrentSet]
 	cmds := NewCommandSet(writer)
 	cmds.PrintBinaryVersions(logger)

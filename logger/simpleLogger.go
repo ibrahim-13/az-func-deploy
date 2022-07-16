@@ -1,25 +1,35 @@
 package logger
 
+import "fmt"
+
 func (logger *Logger) BlackRedln(msg string) {
-	logger.writer.Write([]byte("[black:red]" + msg + __printReset + "\n"))
+	logger.formattedLog("[black:red]%s[-:-:-]\n", msg)
 }
 
 func (logger *Logger) Highlightln(msg string) {
-	logger.writer.Write([]byte("[#2dd1d6:#191bb0]" + msg + __printReset + "\n"))
+	logger.formattedLog("[#2dd1d6:#191bb0]%s[-:-:-]\n", msg)
 }
 
 func (logger *Logger) BlackYellowln(msg string) {
-	logger.writer.Write([]byte("[black:yellow]" + msg + __printReset + "\n"))
+	logger.formattedLog("[black:yellow]%s[-:-:-]\n", msg)
 }
 
 func (logger *Logger) Greenln(msg string) {
-	logger.writer.Write([]byte("[green]" + msg + __printReset + "\n"))
+	logger.formattedLog("[green]%s[-:-:-]\n", msg)
 }
 
 func (logger *Logger) WhiteGreenln(msg string) {
-	logger.writer.Write([]byte("[white:green]" + msg + __printReset + "\n"))
+	logger.formattedLog("[white:green]%s[-:-:-]\n", msg)
 }
 
 func (logger *Logger) WhiteBlueln(msg string) {
-	logger.writer.Write([]byte("[white:blue]" + msg + __printReset + "\n"))
+	logger.formattedLog("[white:blue]%s[-:-:-]\n", msg)
+}
+
+func (logger *Logger) formattedLog(format string, msg string) {
+	if logger.useColor {
+		logger.writer.Write([]byte(fmt.Sprintf(format, msg)))
+	} else {
+		logger.writer.Write([]byte(fmt.Sprintf("%s", msg)))
+	}
 }
