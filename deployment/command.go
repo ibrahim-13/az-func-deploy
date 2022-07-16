@@ -3,7 +3,9 @@ package deployment
 import (
 	"az-func-deploy/logger"
 	"io"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 )
 
@@ -33,7 +35,7 @@ func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) 
 func NewCommandSet(writer io.Writer) PlatformDeployCommands {
 	switch runtime.GOOS {
 	case "windows":
-		return &cmdCtxWindows{w: writer}
+		return &cmdCtxWindows{w: writer, cmdExe: getCmdExeLocation()}
 	case "darwin":
 		return &cmdCtxWindows{w: writer}
 	case "linux":
@@ -41,4 +43,8 @@ func NewCommandSet(writer io.Writer) PlatformDeployCommands {
 	default:
 		panic("Current platform not supported")
 	}
+}
+
+func getCmdExeLocation() string {
+	return filepath.Join(os.Getenv("SYSTEMROOT"), "System32", "cmd.exe")
 }
