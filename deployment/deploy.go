@@ -6,18 +6,22 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 	logger := logger.NewLogger(writer)
 	currentSet := conf.Sets[conf.CurrentSet]
 	cmds := NewCommandSet(writer)
+	cmds.PrintBinaryVersions(logger)
+	logger.Highlightln("Deployment will start in 5 seconds...")
+	time.Sleep(5 * time.Second)
 	logger.Highlightln("Starting Deployment")
 	for _, funcInfo := range currentSet.FuncInfos {
 		logger.SetScope(funcInfo.FuncName)
 		logger.BlackYellowln("Deploying Function")
 		if !funcInfo.ShouldRun {
-			logger.Redln("Skipped")
+			logger.BlackRedln("Skipped")
 			continue
 		}
 		if conf.Method == config.DeployMethodFunc {

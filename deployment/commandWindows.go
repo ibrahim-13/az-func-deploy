@@ -1,6 +1,7 @@
 package deployment
 
 import (
+	"az-func-deploy/logger"
 	"io"
 	"path/filepath"
 	"strconv"
@@ -9,6 +10,15 @@ import (
 
 type cmdCtxWindows struct {
 	w io.Writer
+}
+
+func (ctx *cmdCtxWindows) PrintBinaryVersions(logger *logger.Logger) {
+	logger.WhiteBlueln("dotnet --version")
+	CommandStartAndWait(ctx.w, "", "C:\\Windows\\System32\\cmd.exe", "/c", "dotnet", "--version")
+	logger.WhiteBlueln("az version --output tsv")
+	CommandStartAndWait(ctx.w, "", "C:\\Windows\\System32\\cmd.exe", "/c", "az", "version", "--output", "tsv")
+	logger.WhiteBlueln("func --version")
+	CommandStartAndWait(ctx.w, "", "C:\\Windows\\System32\\cmd.exe", "/c", "dotnet", "--version")
 }
 
 func (ctx *cmdCtxWindows) DotNetBuild(projectDir string) {

@@ -1,12 +1,14 @@
 package deployment
 
 import (
+	"az-func-deploy/logger"
 	"io"
 	"os/exec"
 	"runtime"
 )
 
 type PlatformDeployCommands interface {
+	PrintBinaryVersions(logger *logger.Logger)
 	DotNetBuild(projectDir string)
 	ZipBuildOutput(outputDir string, projectDir string) string
 	// https://docs.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
@@ -19,7 +21,9 @@ type PlatformDeployCommands interface {
 
 func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) {
 	cmd := exec.Command(name, param...)
-	cmd.Dir = dir
+	if dir != "" {
+		cmd.Dir = dir
+	}
 	cmd.Stdout = w
 	cmd.Stderr = w
 	cmd.Start()

@@ -1,11 +1,16 @@
 package deployment
 
 import (
+	"az-func-deploy/logger"
 	"io"
 )
 
 type cmdCtxLinux struct {
 	w io.Writer
+}
+
+func (ctx *cmdCtxLinux) PrintBinaryVersions(logger *logger.Logger) {
+	panic("Not implemented")
 }
 
 func (ctx *cmdCtxLinux) DotNetBuild(projectDir string) {
