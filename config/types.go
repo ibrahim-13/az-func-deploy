@@ -25,7 +25,6 @@ var _deployMethods []DeployMethod = []DeployMethod{DeployMethodAzFunc, DeployMet
 type DeployConfig struct {
 	ConfigJsonLocation string `json:"-"`
 	Method             DeployMethod
-	SubscriptionId     string
 	Sets               []DeploySet
 	CurrentSet         int
 }
