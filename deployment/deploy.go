@@ -2,17 +2,21 @@ package deployment
 
 import (
 	"az-func-deploy/config"
+	"az-func-deploy/logger"
 	"io"
 	"os"
 	"path/filepath"
 )
 
 func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
-	writeHighlightln(writer, "Starting Deployment")
-	for _, funcInfo := range conf.Sets[conf.CurrentSet].FuncInfos {
-		writeBlackYellowln(writer, formatFuncMsg(funcInfo.FuncName, "Deploying Function"))
+	logger := logger.NewLogger(writer)
+	currentSet := conf.Sets[conf.CurrentSet]
+	logger.Highlightln("Starting Deployment")
+	for _, funcInfo := range currentSet.FuncInfos {
+		logger.SetScope(funcInfo.FuncName)
+		logger.BlackYellowln("Deploying Function")
 		if !funcInfo.ShouldRun {
-			writeRedln(writer, formatFuncMsg(funcInfo.FuncName, "Skipped"))
+			logger.Redln("Skipped")
 			continue
 		}
 		if conf.Method == config.DeployMethodFunc {
@@ -22,19 +26,15 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer) {
 			baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
 			outputFile := CommandZipBuildOutput(writer, baseConfigDir, funcInfo.ProjectDir)
 			if conf.Method == config.DeployMethodAzFunc {
-				CommandAzureFuncZipDeploy(writer, conf.Sets[conf.CurrentSet].ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+				CommandAzureFuncZipDeploy(writer, currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
 			} else if conf.Method == config.DeployMethodAzZip {
-				CommandAzureFuncZipDeploy(writer, conf.Sets[conf.CurrentSet].ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+				CommandAzureFuncZipDeploy(writer, currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
 			} else {
 				panic("Invalid deployment methdo: " + conf.Method)
 			}
 			os.Remove(outputFile)
 		}
-		writeBlackYellowln(writer, formatFuncMsg(funcInfo.FuncName, "End"))
+		logger.BlackYellowln("End")
 	}
-	writeHighlightln(writer, "Finised Deployment")
-}
-
-func formatFuncMsg(name string, msg string) string {
-	return "[" + name + "] " + msg
+	logger.Highlightln("Finised Deployment")
 }
