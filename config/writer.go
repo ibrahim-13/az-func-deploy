@@ -17,7 +17,7 @@ func WriteEmptyConfig(filePath string) {
 }
 
 func (c *DeployConfig) WriteConfig() {
-	bytes, err := json.Marshal(c)
+	bytes, err := json.MarshalIndent(c, "", "  ")
 	util.PanicIfNotNil(err)
 	err = os.WriteFile(c.ConfigJsonLocation, bytes, 0755)
 	util.PanicIfNotNil(err)
