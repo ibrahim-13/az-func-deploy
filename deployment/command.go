@@ -2,6 +2,8 @@ package deployment
 
 import (
 	"az-func-deploy/logger"
+	"az-func-deploy/util"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -22,14 +24,32 @@ type PlatformDeployCommands interface {
 }
 
 func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) {
-	cmd := exec.Command(name, param...)
-	if dir != "" {
-		cmd.Dir = dir
+	if util.GetIfShouldRun() {
+		cmd := exec.Command(name, param...)
+		util.SetKillFunc(func() { CommandKill(cmd.Process.Pid) })
+		if dir != "" {
+			cmd.Dir = dir
+		}
+		cmd.Stdout = w
+		cmd.Stderr = w
+		cmd.Start()
+		cmd.Wait()
+		util.SetKillFunc(nil)
 	}
-	cmd.Stdout = w
-	cmd.Stderr = w
-	cmd.Start()
-	cmd.Wait()
+}
+
+func CommandKill(pid int) {
+	switch runtime.GOOS {
+	case "windows":
+		cmd := exec.Command(getCmdExeLocation(), "/c", "TASKKILL", "/F", "/T", "/PID", fmt.Sprint(pid))
+		cmd.Output()
+	case "darwin":
+		panic("Not implemented")
+	case "linux":
+		panic("Not implemented")
+	default:
+		panic("Current platform not supported")
+	}
 }
 
 func NewCommandSet(writer io.Writer) PlatformDeployCommands {

@@ -4,6 +4,7 @@ import (
 	"az-func-deploy/config"
 	"az-func-deploy/deployment"
 	"az-func-deploy/ui"
+	"az-func-deploy/util"
 	"os"
 
 	"github.com/rivo/tview"
@@ -46,5 +47,6 @@ func main() {
 		if err := app.SetRoot(pages, true).Run(); err != nil {
 			panic(err)
 		}
+		util.ExecuteKill()
 	}
 }
