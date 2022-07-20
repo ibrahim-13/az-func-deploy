@@ -17,8 +17,9 @@ func removeFuncs(form *tview.Form, dcon *config.DeployConfig) {
 func addFuncs(form *tview.Form, dcon *config.DeployConfig) {
 	currentSet := dcon.Sets[dcon.CurrentSet]
 	for i, funcInfo := range currentSet.FuncInfos {
+		funcIndex := i
 		form.AddCheckbox(funcInfo.FuncName, funcInfo.ShouldRun, func(checked bool) {
-			dcon.Sets[dcon.CurrentSet].FuncInfos[i].ShouldRun = checked
+			dcon.Sets[dcon.CurrentSet].FuncInfos[funcIndex].ShouldRun = checked
 			dcon.WriteConfig()
 		})
 	}
