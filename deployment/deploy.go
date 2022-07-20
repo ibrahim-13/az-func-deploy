@@ -21,6 +21,7 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 	for _, funcInfo := range currentSet.FuncInfos {
 		logger.SetScope(funcInfo.FuncName)
 		logger.BlackYellowln("Deploying Function: " + funcInfo.FuncName)
+		logger.BlackYellowln(funcInfo.ProjectDir)
 		if !funcInfo.ShouldRun {
 			logger.BlackRedln("Skipped")
 			continue
@@ -40,7 +41,7 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 			}
 			os.Remove(outputFile)
 		}
-		logger.BlackYellowln("End")
+		logger.BlackYellowln("End: " + funcInfo.FuncName)
 	}
 	logger.Highlightln("Finised Deployment")
 }
