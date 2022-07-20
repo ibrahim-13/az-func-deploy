@@ -3,6 +3,7 @@ package deployment
 import (
 	"az-func-deploy/config"
 	"az-func-deploy/logger"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -18,12 +19,14 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 	logger.Highlightln("Deployment will start in 5 seconds...")
 	time.Sleep(5 * time.Second)
 	logger.Highlightln("Starting Deployment")
-	for _, funcInfo := range currentSet.FuncInfos {
-		logger.SetScope(funcInfo.FuncName)
-		logger.BlackYellowln("Deploying Function: " + funcInfo.FuncName)
-		logger.BlackYellowln(funcInfo.ProjectDir)
+	totalFuncs := len(currentSet.FuncInfos)
+	deployCount := 0
+	for i, funcInfo := range currentSet.FuncInfos {
+		logger.SetScope(fmt.Sprintf("%d/%d | %s", i+1, totalFuncs, funcInfo.FuncName))
+		logger.ScopedBlackYellowln("Deploying Function")
+		logger.ScopedBlackYellowln(funcInfo.ProjectDir)
 		if !funcInfo.ShouldRun {
-			logger.BlackRedln("Skipped")
+			logger.ScopedBlackRedln("Skipped")
 			continue
 		}
 		if conf.Method == config.DeployMethodFunc {
@@ -41,7 +44,9 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 			}
 			os.Remove(outputFile)
 		}
-		logger.BlackYellowln("End: " + funcInfo.FuncName)
+		deployCount += 1
+		logger.ScopedBlackYellowln("End")
 	}
+	logger.Highlightln(fmt.Sprintf("Deployed %d of %d functions", deployCount, totalFuncs))
 	logger.Highlightln("Finised Deployment")
 }
