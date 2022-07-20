@@ -37,7 +37,7 @@ func NewCommandSet(writer io.Writer) PlatformDeployCommands {
 	case "windows":
 		return &cmdCtxWindows{w: writer, cmdExe: getCmdExeLocation()}
 	case "darwin":
-		return &cmdCtxWindows{w: writer}
+		return &cmdCtxDarwin{w: writer}
 	case "linux":
 		return &cmdCtxLinux{w: writer}
 	default:

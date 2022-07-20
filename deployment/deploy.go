@@ -20,7 +20,7 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 	logger.Highlightln("Starting Deployment")
 	for _, funcInfo := range currentSet.FuncInfos {
 		logger.SetScope(funcInfo.FuncName)
-		logger.BlackYellowln("Deploying Function")
+		logger.BlackYellowln("Deploying Function: " + funcInfo.FuncName)
 		if !funcInfo.ShouldRun {
 			logger.BlackRedln("Skipped")
 			continue
