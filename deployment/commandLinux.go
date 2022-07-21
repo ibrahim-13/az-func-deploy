@@ -13,22 +13,22 @@ func (ctx *cmdCtxLinux) PrintBinaryVersions(logger *logger.Logger) {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxLinux) DotNetBuild(projectDir string) {
+func (ctx *cmdCtxLinux) DotNetBuild(projectDir string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxLinux) ZipBuildOutput(outputDir string, projectDir string) string {
+func (ctx *cmdCtxLinux) ZipBuildOutput(outputDir string, projectDir string) (string, bool) {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxLinux) AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) {
+func (ctx *cmdCtxLinux) AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxLinux) AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) {
+func (ctx *cmdCtxLinux) AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxLinux) FuncDeployProject(funcName string, projectDir string) {
+func (ctx *cmdCtxLinux) FuncDeployProject(funcName string, projectDir string) bool {
 	panic("Not implemented")
 }

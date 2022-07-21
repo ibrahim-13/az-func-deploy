@@ -13,22 +13,22 @@ func (ctx *cmdCtxDarwin) PrintBinaryVersions(logger *logger.Logger) {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxDarwin) DotNetBuild(projectDir string) {
+func (ctx *cmdCtxDarwin) DotNetBuild(projectDir string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxDarwin) ZipBuildOutput(outputDir string, projectDir string) string {
+func (ctx *cmdCtxDarwin) ZipBuildOutput(outputDir string, projectDir string) (string, bool) {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxDarwin) AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) {
+func (ctx *cmdCtxDarwin) AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxDarwin) AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) {
+func (ctx *cmdCtxDarwin) AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxDarwin) FuncDeployProject(funcName string, projectDir string) {
+func (ctx *cmdCtxDarwin) FuncDeployProject(funcName string, projectDir string) bool {
 	panic("Not implemented")
 }

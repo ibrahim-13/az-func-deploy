@@ -13,17 +13,17 @@ import (
 
 type PlatformDeployCommands interface {
 	PrintBinaryVersions(logger *logger.Logger)
-	DotNetBuild(projectDir string)
-	ZipBuildOutput(outputDir string, projectDir string) string
+	DotNetBuild(projectDir string) bool
+	ZipBuildOutput(outputDir string, projectDir string) (string, bool)
 	// https://docs.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
-	AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string)
+	AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool
 	// https://docs.microsoft.com/en-us/cli/azure/functionapp/deployment/source?view=azure-cli-latest#az-functionapp-deployment-source-config-zip
-	AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string)
+	AzureFuncZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool
 	// https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v4%2Cwindows%2Ccsharp%2Cportal%2Cbash#project-file-deployment
-	FuncDeployProject(funcName string, projectDir string)
+	FuncDeployProject(funcName string, projectDir string) bool
 }
 
-func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) {
+func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) bool {
 	if util.GetIfShouldRun() {
 		cmd := exec.Command(name, param...)
 		util.SetKillFunc(func() { CommandKill(cmd.Process.Pid) })
@@ -33,9 +33,11 @@ func CommandStartAndWait(w io.Writer, dir string, name string, param ...string) 
 		cmd.Stdout = w
 		cmd.Stderr = w
 		cmd.Start()
-		cmd.Wait()
+		err := cmd.Wait()
 		util.SetKillFunc(nil)
+		return err == nil
 	}
+	return false
 }
 
 func CommandKill(pid int) {
