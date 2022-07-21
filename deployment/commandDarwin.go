@@ -17,7 +17,7 @@ func (ctx *cmdCtxDarwin) DotNetBuild(projectDir string) bool {
 	panic("Not implemented")
 }
 
-func (ctx *cmdCtxDarwin) ZipBuildOutput(outputDir string, projectDir string) (string, bool) {
+func (ctx *cmdCtxDarwin) ZipBuildOutput(outputDir string, projectDir string) bool {
 	panic("Not implemented")
 }
 

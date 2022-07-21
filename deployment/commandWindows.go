@@ -4,8 +4,6 @@ import (
 	"az-func-deploy/logger"
 	"io"
 	"path/filepath"
-	"strconv"
-	"time"
 )
 
 type cmdCtxWindows struct {
@@ -33,9 +31,8 @@ func (ctx *cmdCtxWindows) DotNetBuild(projectDir string) bool {
 		"Release")
 }
 
-func (ctx *cmdCtxWindows) ZipBuildOutput(outputDir string, projectDir string) (string, bool) {
+func (ctx *cmdCtxWindows) ZipBuildOutput(zipFile string, projectDir string) bool {
 	buildDir := filepath.Join(projectDir, "bin", "Release", "net6.0")
-	zipFile := filepath.Join(outputDir, strconv.FormatInt(time.Now().Unix(), 10)+".zip")
 	ok := CommandStartAndWait(ctx.w,
 		buildDir,
 		ctx.cmdExe,
@@ -43,7 +40,7 @@ func (ctx *cmdCtxWindows) ZipBuildOutput(outputDir string, projectDir string) (s
 		"powershell",
 		"-command",
 		"Compress-Archive -Path * -DestinationPath "+zipFile)
-	return zipFile, ok
+	return ok
 }
 
 func (ctx *cmdCtxWindows) AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool {

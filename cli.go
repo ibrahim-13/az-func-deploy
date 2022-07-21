@@ -48,5 +48,10 @@ func main() {
 			panic(err)
 		}
 		util.ExecuteKill()
+		for _, file := range util.GetCleanupFiles() {
+			if util.ExistsFile(file) {
+				os.Remove(file)
+			}
+		}
 	}
 }

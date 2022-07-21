@@ -3,10 +3,12 @@ package deployment
 import (
 	"az-func-deploy/config"
 	"az-func-deploy/logger"
+	"az-func-deploy/util"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -35,7 +37,7 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 		}
 	}
 	for i, funcInfo := range currentSet.FuncInfos {
-		logger.SetScope(fmt.Sprintf("%2d/%2d | %s", i+1, totalFuncs, funcInfo.FuncName))
+		logger.SetScope(fmt.Sprintf("%d/%d | %s", i+1, totalFuncs, funcInfo.FuncName))
 		logger.ScopedBlackYellowln("Deploying Function")
 		logger.BlackYellowln(funcInfo.ProjectDir)
 		if !funcInfo.ShouldRun {
@@ -53,19 +55,21 @@ func DeployFunctions(conf *config.DeployConfig, writer io.Writer, disableColor b
 			handleCmdResult(ok)
 			baseConfigDir := filepath.Dir(conf.ConfigJsonLocation)
 			logger.ScopedWhiteBlueln("Creating zip artifact...")
-			outputFile, ok := cmds.ZipBuildOutput(baseConfigDir, funcInfo.ProjectDir)
+			zipFile := filepath.Join(baseConfigDir, strconv.FormatInt(time.Now().Unix(), 10)+".zip")
+			util.AddCleanupFile(zipFile)
+			ok = cmds.ZipBuildOutput(zipFile, funcInfo.ProjectDir)
 			handleCmdResult(ok)
 			logger.ScopedWhiteBlueln("Deploying artifact...")
 			if conf.Method == config.DeployMethodAzFunc {
-				ok := cmds.AzureFuncZipDeploy(currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+				ok := cmds.AzureFuncZipDeploy(currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, zipFile)
 				handleCmdResult(ok)
 			} else if conf.Method == config.DeployMethodAzZip {
-				ok := cmds.AzureZipDeploy(currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, outputFile)
+				ok := cmds.AzureZipDeploy(currentSet.ResourceGroupName, funcInfo.FuncName, funcInfo.ProjectDir, zipFile)
 				handleCmdResult(ok)
 			} else {
 				panic("Invalid deployment methdo: " + conf.Method)
 			}
-			os.Remove(outputFile)
+			os.Remove(zipFile)
 		}
 		deployedFuncs = append(deployedFuncs, funcInfo.FuncName)
 		logger.ScopedBlackYellowln("End")

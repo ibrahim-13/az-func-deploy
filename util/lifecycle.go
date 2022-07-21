@@ -7,6 +7,7 @@ import (
 var lock sync.Mutex
 var shouldRun bool = true
 var killFunc func() = nil
+var fileCleanups []string = []string{}
 
 func SetKillFunc(fn func()) {
 	lock.Lock()
@@ -15,6 +16,8 @@ func SetKillFunc(fn func()) {
 }
 
 func ExecuteKill() {
+	lock.Lock()
+	defer lock.Unlock()
 	if killFunc != nil {
 		killFunc()
 	}
@@ -22,9 +25,25 @@ func ExecuteKill() {
 }
 
 func SetIfShouldRun(sr bool) {
+	lock.Lock()
+	defer lock.Unlock()
 	shouldRun = sr
 }
 
 func GetIfShouldRun() bool {
+	lock.Lock()
+	defer lock.Unlock()
 	return shouldRun
+}
+
+func AddCleanupFile(file string) {
+	lock.Lock()
+	defer lock.Unlock()
+	fileCleanups = append(fileCleanups, file)
+}
+
+func GetCleanupFiles() []string {
+	lock.Lock()
+	defer lock.Unlock()
+	return fileCleanups
 }

@@ -14,7 +14,7 @@ import (
 type PlatformDeployCommands interface {
 	PrintBinaryVersions(logger *logger.Logger)
 	DotNetBuild(projectDir string) bool
-	ZipBuildOutput(outputDir string, projectDir string) (string, bool)
+	ZipBuildOutput(outputDir string, projectDir string) bool
 	// https://docs.microsoft.com/en-us/azure/app-service/deploy-zip?tabs=cli
 	AzureZipDeploy(resourceGroup string, funcName string, projectDir string, zipFile string) bool
 	// https://docs.microsoft.com/en-us/cli/azure/functionapp/deployment/source?view=azure-cli-latest#az-functionapp-deployment-source-config-zip
